@@ -1,9 +1,10 @@
 import { Fragment } from 'react';
 import UserResults from '../components/users/UserResults';
+import UserSearch from '../components/users/UserSearch';
 function Home() {
   return (
     <Fragment>
-      {/* Search component here */}
+      <UserSearch />
       <UserResults />
     </Fragment>
   );
