@@ -1,6 +1,3 @@
-import { FaCodepen, FaStore, FaUserFriends, FaUsers } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import Spinner from '../../components/layout/Spinner';
 import { createContext, useReducer } from 'react';
 import githubReducer from './GithubReducer';
 
@@ -13,6 +10,7 @@ export const GithubProvider = ({ children }) => {
   const initialState = {
     users: [],
     user: {},
+    repos: [],
     loading: false,
   };
   const [state, dispatch] = useReducer(githubReducer, initialState);
@@ -60,6 +58,32 @@ export const GithubProvider = ({ children }) => {
     }
   };
 
+  //get user repos
+  const getUserRepos = async (login) => {
+    setLoading();
+
+    const params = new URLSearchParams({
+      sort: 'created',
+      per_page: 10,
+    });
+
+    const response = await fetch(
+      `${GITHUB_URL}/users/${login}/repos?${params}`,
+      {
+        headers: {
+          Authorization: `token ${GITHUB_TOKEN}`,
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    dispatch({
+      type: 'GET_REPOS',
+      payload: data,
+    });
+  };
+
   const clearUsers = () => {
     dispatch({ type: 'CLEAR_USERS', payload: [] });
   };
@@ -72,8 +96,10 @@ export const GithubProvider = ({ children }) => {
         users: state.users,
         loading: state.loading,
         user: state.user,
+        repos: state.repos,
         searchUsers,
         getUser,
+        getUserRepos,
         clearUsers,
       }}
     >
